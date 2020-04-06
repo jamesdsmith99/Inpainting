@@ -45,7 +45,7 @@ class SizeTrainer:
 
         real_images = next(self.data_loader).float().to(DEVICE)
 
-        size_vec = torch.tensor(sizes)
+        size_vec = torch.tensor(sizes).to(DEVICE)
         
         D_real = self.D(real_images).view(-1)
         D_fake = self.D(fake_images).view(-1)
