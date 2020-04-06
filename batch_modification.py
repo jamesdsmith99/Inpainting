@@ -11,7 +11,7 @@ class Eraser:
             sizes = [int] - list of sizes
 
             Given the batch of single channel images x, ∀ i ∈ range(x.size[0]):
-            set the pixels in a square whose top left corner is located at positions[i]of size sizes[i] to 0.
+            set the pixels in a square whose top left corner is located at positions[i]of size sizes[i] to 1.
         '''
         x̂ = x.clone()
 
@@ -27,10 +27,10 @@ class Eraser:
     def _randomly_generate_positions(shape, sizes):
         '''
             shape = torch.Size - size of a tensor representing a batch of single channel images
-            sizes = [int] - list of ints representing the sizes of the regions to black out
+            sizes = [int] - list of ints representing the sizes of the regions to white out
 
-            Given a batch with a shape, randomly generate the location of the top-left corner to black out
-            so that the blacked out region lies within the image properly.
+            Given a batch with a shape, randomly generate the location of the top-left corner to white out
+            so that the whited out region lies within the image properly.
 
             The coordinates are in the form (x, y)
         '''
@@ -45,6 +45,20 @@ class Eraser:
         positions = Eraser._randomly_generate_positions(x.shape, sizes)
 
         return Eraser._erase_at(x, positions, sizes), sizes, positions
+
+    @staticmethod
+    def erase_random_size_location(x, max_size):
+        '''
+            x = Tensor - batch of images
+            max_size = int - maximum size square that can be erased (inclusive)
+
+            Given a batch of images x erase a square of random size at a random location.
+        '''
+        sizes = [random.randint(0, max_size) for _ in range(x.shape[0])]
+        positions = Eraser._randomly_generate_positions(x.shape, sizes)
+
+        return Eraser._erase_at(x, positions, sizes), sizes, positions
+
 
 class Implanter:
 
