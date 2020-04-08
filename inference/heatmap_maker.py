@@ -1,7 +1,6 @@
 import torch
 from matplotlib import pyplot as plt
 
-from batch_modification import Implanter
 from trainers.loss import l2_norm
 
 class HeatmapMaker:
@@ -28,11 +27,16 @@ class HeatmapMaker:
         row = [self._erase_region_at(img, y, x).unsqueeze(0) for x in range(0, w+1-self.crop_size, self.stride)]
         return torch.stack(row)
 
+    def _create_inpainted_image(self, x, p, x_pos, y_pos):
+        res = x.clone()
+        res[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size] = p[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size]
+        return res
+    
     def _save_vis_frame(self, x, p, loss, x_pos, y_pos, fname):
         fig, ax = plt.subplots(ncols=2)
         pos = (x_pos, y_pos)
-        inpainted = Implanter.implant(x, p, [pos], [self.crop_size])
-        
+        inpainted = self._create_inpainted_image(x, p, x_pos, y_pos)
+                
         ax[0].imshow(x.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
         ax[1].imshow(inpainted.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
 
