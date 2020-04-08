@@ -12,6 +12,19 @@ def mean_GAN_loss_wandb(G_loss_arr, D_loss_arr, epoch):
         'Discriminator Loss': D_loss
     }, step=epoch)
 
+def mean_skip_GAN_loss_wandb(G_loss_arr, D_loss_arr, loss_rec_arr, loss_adv_arr, epoch):
+    G_loss = np.mean(G_loss_arr)
+    D_loss = np.mean(D_loss_arr)
+    l_rec = np.mean(loss_rec_arr)
+    l_adv = np.mean(loss_adv_arr)
+
+    wandb.log({
+        'Generator Loss': G_loss,
+        'Discriminator Loss': D_loss,
+        'Reconstruction Loss': l_rec,
+        'Adversarial Loss': l_adv
+    }, step=epoch)
+
 def log_samples(x, p, n, epoch):
     '''
         plot n predictions below the blacked out image
