@@ -14,6 +14,8 @@ class HeatmapMaker:
         self.crop_size = crop_size
         self.stride = stride
 
+        self.vis = vis
+
         self.ones = torch.ones(crop_size, crop_size)
 
     def _erase_region_at(self, img, y, x):
