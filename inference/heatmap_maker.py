@@ -1,4 +1,5 @@
 import torch
+from tqdm import tqdm
 from matplotlib import pyplot as plt
 
 from trainers.loss import l2_norm
@@ -36,7 +37,7 @@ class HeatmapMaker:
         fig, ax = plt.subplots(ncols=2)
         pos = (x_pos, y_pos)
         inpainted = self._create_inpainted_image(x, p, x_pos, y_pos)
-                
+
         ax[0].imshow(x.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
         ax[1].imshow(inpainted.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
 
@@ -49,7 +50,7 @@ class HeatmapMaker:
         
         h, w = scan.shape
 
-        for j, y in enumerate(range(0, h+1-self.crop_size, self.stride)):
+        for j, y in tqdm(enumerate(range(0, h+1-self.crop_size, self.stride))):
             batch = self._create_row_batch(scan, y).to(self.device)
 
             with torch.no_grad():
