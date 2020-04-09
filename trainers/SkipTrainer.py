@@ -7,7 +7,7 @@ from TorchIO import load_model
 
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-class SizeTrainer:
+class SkipTrainer:
 
     def __init__(self, G, D, optimiser_G, optimiser_D, data_loader, batch_size, num_iters, overtrain_D=1, max_erase_size=16, α=1, β=1, metric_logger=None, sample_logger=None):
         self.G, self.D = G.to(DEVICE), D.to(DEVICE)
