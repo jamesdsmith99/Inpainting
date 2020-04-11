@@ -11,20 +11,21 @@ def l2_loss(x, p, x_pos, y_pos, crop_size):
 
 class DiscriminatorLoss:
 
-    def __init__(self, D):
+    def __init__(self, D, device):
         D.eval()
         self.D = D
+        self.device = device
 
     def calc_loss(self, x, p, x_pos, y_pos, crop_size):
         with torch.no_grad():
-            size_pred = self.D(p.unsqueeze(0))
+            size_pred = self.D(p.unsqueeze(0).to(self.device)).cpu()
 
         return size_pred**2 # l2_loss betwen predicted and 0, no need for mean as single image
 
 class SkipGANLoss:
 
-    def __init__(self, D, α, β):
-        self.DLoss = DiscriminatorLoss(D)
+    def __init__(self, D, α, β, device):
+        self.DLoss = DiscriminatorLoss(D, device)
         self.α, self.β = α, β
 
     def calc_loss(self, x, p, x_pos, y_pos, crop_size):
