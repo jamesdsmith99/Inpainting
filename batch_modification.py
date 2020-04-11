@@ -59,6 +59,19 @@ class Eraser:
 
         return Eraser._erase_at(x, positions, sizes), sizes, positions
 
+    @staticmethod
+    def erase_random_size_location_exp(x, max_size):
+        '''
+            x = Tensor - batch of images
+            max_size = int - maximum size square that can be erased (inclusive)
+
+            Given a batch of images x erase a square of random size at a random location.
+        '''
+        sizes = [random.randint(0, max_size) for _ in range(x.shape[0])]
+        positions = Eraser._randomly_generate_positions(x.shape, sizes)
+
+        return Eraser._erase_at(x, positions, sizes), sizes, positions
+
 
 class Implanter:
 

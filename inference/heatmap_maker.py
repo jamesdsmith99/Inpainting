@@ -2,14 +2,14 @@ import torch
 from tqdm import tqdm
 from matplotlib import pyplot as plt
 
-from trainers.loss import l2_norm
-
 class HeatmapMaker:
 
-    def __init__(self, model, crop_size, device, stride=1, vis=False):
+    def __init__(self, model, crop_size, loss_fn, device, stride=1, vis=False):
         model.eval()
         self.model = model.to(device)
         self.device = device
+
+        self.loss_fn = loss_fn
 
         self.crop_size = crop_size
         self.stride = stride
@@ -57,8 +57,8 @@ class HeatmapMaker:
                 pred = self.model(batch)
 
             for i, x in enumerate(range(0, w+1-self.crop_size, self.stride)):
-                inpainted_diff = (pred[i] - batch[i])[0, y:y+self.crop_size, x:x+self.crop_size]
-                loss = l2_norm(inpainted_diff)
+                inpainted_image = self._create_inpainted_image(batch[i], pred[i], x, y)
+                loss = self.loss_fn(batch[i], inpainted_image, x, y, self.crop_size)
                 
                 if self.vis:
                     fname = j*((h+1-self.crop_size)//self.stride) + i
