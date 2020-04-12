@@ -1,7 +1,7 @@
 import torch
 
 def pixel_loss(x, p, x_pos, y_pos, crop_size):
-    return (x - p)[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
+    return (x - p)[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size].cpu()
 
 def l1_loss(x, p, x_pos, y_pos, crop_size):
     return (x - p).abs().mean()
