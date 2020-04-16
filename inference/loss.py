@@ -1,4 +1,5 @@
 import torch
+from skimage.metrics import structural_similarity
 
 
 '''
@@ -44,11 +45,28 @@ def _ssim_loss(x, y):
     return (1 - similarity).cpu()
 
 
+def _sk_ssim_loss(x, y):
+    x = (x + 1) * 0.5
+    y = (y + 1) * 0.5
+
+    x, y = x.detach().cpu().numpy(), y.detach().cpu().numpy()
+
+    return 1 - structural_similarity(x, y)
+
+def sk_patch_ssim_loss(x, p, x_pos, y_pos, crop_size):
+    x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size].cpu().numpy()
+    p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size].cpu().numpy()
+
+    return _sk_ssim_loss(x, p)
+
 def patch_ssim_loss(x, p, x_pos, y_pos, crop_size):
     x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
     p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
 
     return _ssim_loss(x, p)
+
+def sk_global_ssim_loss(x, p, x_pos, y_pos, crop_size):
+    return _sk_ssim_loss(x, p)
 
 def global_ssim_loss(x, p, x_pos, y_pos, crop_size):
     return _ssim_loss(x, p)
