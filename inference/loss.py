@@ -22,7 +22,7 @@ def _patch_hist_dist(x, p, x_pos, y_pos, crop_size, metric):
     p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
 
     x_hist = _convert_to_hist(x, 40)
-    p_hist = _convert_to_hist(y, 40)
+    p_hist = _convert_to_hist(p, 40)
 
     return metric(x_hist, p_hist)
 
