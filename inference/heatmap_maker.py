@@ -33,15 +33,16 @@ class HeatmapMaker:
         res[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size] = p[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size]
         return res
     
-    def _save_vis_frame(self, x, p, loss, x_pos, y_pos, fname):
-        fig, ax = plt.subplots(ncols=4)
+    def _save_vis_frame(self, x, x̂, p, loss, x_pos, y_pos, fname):
+        fig, ax = plt.subplots(nrows=2, ncols=2)
         pos = (x_pos, y_pos)
         inpainted = self._create_inpainted_image(x, p, x_pos, y_pos)
 
-        ax[0].imshow(x.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
-        ax[1].imshow(inpainted.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
-        ax[2].imshow(x[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size].cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
-        ax[3].imshow(p[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size].cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+        ax[0][0].imshow(x̂.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+        ax[0][1].imshow(inpainted.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+        
+        ax[1][0].imshow(x[y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size].cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+        ax[1][1].imshow(p[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size].cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
 
 
         fig.suptitle(f'Loss: {loss}')
@@ -65,7 +66,7 @@ class HeatmapMaker:
                 
                 if self.vis:
                     fname = j*((h+1-self.crop_size)//self.stride) + i
-                    self._save_vis_frame(batch[i], pred[i], loss, x, y, fname)
+                    self._save_vis_frame(scan, batch[i], pred[i], loss, x, y, fname)
                 
                 heatmap[y:y+self.crop_size, x:x+self.crop_size] = heatmap[y:y+self.crop_size, x:x+self.crop_size] + loss * self.ones
                 counts[y:y+self.crop_size, x:x+self.crop_size] = counts[y:y+self.crop_size, x:x+self.crop_size] + self.ones
