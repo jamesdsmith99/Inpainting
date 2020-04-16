@@ -1,6 +1,30 @@
 import torch
+import numpy as np
+
+from scipy.spatial.distance import braycurtis, jensenshannon
+from scipy.stats import energy_distance, wasserstein_distance
+
 from skimage.metrics import structural_similarity
 
+
+'''
+    convert a tensor with values in range [-1, 1] x to a numpy histogram with n bins
+'''
+def _convert_to_hist(x, n):
+    x = x.detach().cpu().numpy()
+    return np.histogram(x, bins=n, range=(-1, 1), density=True)
+
+'''
+    calculate the distance between the histograms for the inpainted patches, using the distance metric
+'''
+def _patch_hist_dist(x, p, x_pos, y_pos, crop_size, metric):
+    x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
+    p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
+
+    x_hist = _convert_to_hist(x, 40)
+    p_hist = _convert_to_hist(y, 40)
+
+    return metric(x_hist, p_hist)
 
 '''
     calculate the standard deviation of the elements in a demeaned (mean=0) tensor x
@@ -70,6 +94,15 @@ def sk_global_ssim_loss(x, p, x_pos, y_pos, crop_size):
 
 def global_ssim_loss(x, p, x_pos, y_pos, crop_size):
     return _ssim_loss(x, p)
+
+def wasserstein(x, p, x_pos, y_pos, crop_size):
+    return _patch_hist_dist(x, p, x_pos, y_pos, crop_size, wasserstein_distance)
+
+def energy(x, p, x_pos, y_pos, crop_size):
+    return _patch_hist_dist(x, p, x_pos, y_pos, crop_size, energy_distance)
+
+def jensen_shannon(x, p, x_pos, y_pos, crop_size):
+    return _patch_hist_dist(x, p, x_pos, y_pos, crop_size, jensenshannon)
 
 def pixel_loss(x, p, x_pos, y_pos, crop_size):
     return (x - p)[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size].cpu()
