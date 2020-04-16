@@ -66,7 +66,7 @@ def patch_ssim_loss(x, p, x_pos, y_pos, crop_size):
     return _ssim_loss(x, p)
 
 def sk_global_ssim_loss(x, p, x_pos, y_pos, crop_size):
-    return _sk_ssim_loss(x, p)
+    return _sk_ssim_loss(x[0, :, :], p[0, :, :])
 
 def global_ssim_loss(x, p, x_pos, y_pos, crop_size):
     return _ssim_loss(x, p)
