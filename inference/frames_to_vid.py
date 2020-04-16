@@ -12,7 +12,7 @@ def frames_to_vid(image_folder, output_name):
     frame = cv.imread(os.path.join(image_folder, images[0]))
     height, width, _ = frame.shape 
 
-    FOURCC = cv.VideoWriter_fourcc(*'MP4V')
+    FOURCC = cv.VideoWriter_fourcc(*'XVID')
     video = cv.VideoWriter(output_name, FOURCC, 30, (width, height))
 
     for img in images:
