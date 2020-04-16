@@ -54,8 +54,8 @@ def _sk_ssim_loss(x, y):
     return 1 - structural_similarity(x, y)
 
 def sk_patch_ssim_loss(x, p, x_pos, y_pos, crop_size):
-    x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size].cpu().numpy()
-    p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size].cpu().numpy()
+    x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
+    p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
 
     return _sk_ssim_loss(x, p)
 
