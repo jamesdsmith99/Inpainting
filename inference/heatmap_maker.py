@@ -34,12 +34,15 @@ class HeatmapMaker:
         return res
     
     def _save_vis_frame(self, x, p, loss, x_pos, y_pos, fname):
-        fig, ax = plt.subplots(ncols=2)
+        fig, ax = plt.subplots(ncols=4)
         pos = (x_pos, y_pos)
         inpainted = self._create_inpainted_image(x, p, x_pos, y_pos)
 
         ax[0].imshow(x.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
         ax[1].imshow(inpainted.squeeze().cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+        ax[2].imshow(x[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size].cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+        ax[3].imshow(p[0, y_pos:y_pos+self.crop_size, x_pos:x_pos+self.crop_size].cpu().numpy(), cmap='gray', vmin=-1, vmax=1)
+
 
         fig.suptitle(f'Loss: {loss}')
         plt.savefig(f'{fname}.png')
