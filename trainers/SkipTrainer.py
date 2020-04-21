@@ -112,7 +112,7 @@ class SkipTrainer:
             self.loss_adv_arr = np.zeros(0)
 
             # record samples
-            if epoch % 10 == 0 and self.log_samples:
+            if epoch % 25 == 0 and self.log_samples:
                 self.log_samples(self.x̂, self.gen, 4, epoch)
 
             epoch += 1
