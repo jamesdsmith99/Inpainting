@@ -9,7 +9,7 @@ DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 
 class AdvTrainer:
 
-    def __init__(self, G, D, optimiser_G, optimiser_D, data_loader, batch_size, num_iters, overtrain_D=1, metric_logger=None, sample_logger=None):
+    def __init__(self, G, D, optimiser_G, optimiser_D, data_loader, batch_size, num_iters, overtrain_D=1, max_erase_size=16, metric_logger=None, sample_logger=None):
         self.G, self.D = G.to(DEVICE), D.to(DEVICE)
 
         self.optimiser_G, self.optimiser_D = optimiser_G, optimiser_D
@@ -20,6 +20,8 @@ class AdvTrainer:
         self.data_loader = data_loader
 
         self.overtrain_D = overtrain_D
+
+        self.max_erase_size = max_erase_size
 
         self.log_metrics = metric_logger
         self.log_samples = sample_logger
@@ -34,7 +36,7 @@ class AdvTrainer:
     def _train_D(self):
         
         x = next(self.data_loader).float().to(DEVICE)
-        x̂, sizes, positions = Eraser.erase_random_location(x, 16)
+        x̂, sizes, positions = Eraser.erase_random_size_location(x, self.max_erase_size)
 
         fake = self.G(x̂)
         fake_images = Implanter.implant(x, fake, positions, sizes)
@@ -56,7 +58,7 @@ class AdvTrainer:
 
     def _train_G(self):
         x = next(self.data_loader).float().to(DEVICE)
-        x̂, sizes, positions = Eraser.erase_random_location(x, 16)
+        x̂, sizes, positions = Eraser.erase_random_size_location(x, self.max_erase_size)
 
         self.x̂ = x̂ # save to a field to be accessed for logging
 
