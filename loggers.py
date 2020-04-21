@@ -3,6 +3,12 @@ from matplotlib import pyplot as plt
 import torchvision
 import wandb
 
+def mean_G_loss_wandb(G_loss_arr, epoch):
+    G_loss = np.mean(G_loss_arr)
+    wandb.log({
+        'Generator Loss': G_loss,
+    }, step=epoch)
+
 def mean_GAN_loss_wandb(G_loss_arr, D_loss_arr, epoch):
     G_loss = np.mean(G_loss_arr)
     D_loss = np.mean(D_loss_arr)
