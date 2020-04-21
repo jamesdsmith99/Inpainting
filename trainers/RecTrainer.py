@@ -7,7 +7,7 @@ from TorchIO import load_model
 
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
-class AdvTrainer:
+class RecTrainer:
 
     def __init__(self, G, optimiser_G, data_loader, batch_size, num_iters, max_erase_size=16, metric_logger=None, sample_logger=None):
         self.G = G.to(DEVICE)
