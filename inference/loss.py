@@ -4,7 +4,7 @@ import numpy as np
 from scipy.spatial.distance import braycurtis, jensenshannon
 from scipy.stats import energy_distance, wasserstein_distance
 
-from skimage.metrics import structural_similarity
+from skimage.metrics import structural_similarity, peak_signal_noise_ratio
 
 
 '''
@@ -82,6 +82,26 @@ def sk_patch_ssim_loss(x, p, x_pos, y_pos, crop_size):
     p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
 
     return _sk_ssim_loss(x, p)
+
+def _sk_psnr(x, y):
+    x = (x + 1) * 0.5
+    y = (y + 1) * 0.5
+
+    x, y = x.detach().cpu().numpy(), y.detach().cpu().numpy()
+
+    return peak_signal_noise_ratio(x, y)
+
+def sk_patch_psnr(x, p, x_pos, y_pos, crop_size):
+    x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
+    p = p[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
+
+    return _sk_psnr(x, p)
+
+def sk_psnr(x, p, x_pos, y_pos, crop_size):
+    x = x[0, :, :]
+    p = p[0, :, :]
+
+    return _sk_psnr(x, p)
 
 def patch_ssim_loss(x, p, x_pos, y_pos, crop_size):
     x = x[0, y_pos:y_pos+crop_size, x_pos:x_pos+crop_size]
